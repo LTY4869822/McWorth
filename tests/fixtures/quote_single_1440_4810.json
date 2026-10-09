@@ -1,0 +1,38 @@
+{
+  "_meta": {
+    "tool": "calculate-price",
+    "captured_at": "2026-10-09 20:41:14",
+    "trace_id": "e597eb6839b601d2a9fe5ee3d87eaa92",
+    "store_code": "1450713",
+    "order_type": 1,
+    "be_type": 1,
+    "cart": "麦辣鸡腿汉堡×1 + 中薯条×1（单品直购，公平基准）",
+    "offer": [
+      {"product_code": "1440", "quantity": 1},
+      {"product_code": "4810", "quantity": 1}
+    ],
+    "projection": "完整实测响应原文，未做删改。"
+  },
+  "response": {
+    "success": true,
+    "code": 200,
+    "message": "请求成功",
+    "datetime": "2026-10-09 20:41:14",
+    "traceId": "e597eb6839b601d2a9fe5ee3d87eaa92",
+    "data": {
+      "productOriginalPrice": 3600,
+      "productPrice": 3600,
+      "originalPrice": 3600,
+      "discount": 0,
+      "price": 3600,
+      "productList": [
+        {"productCode": "1440", "productName": "麦辣鸡腿汉堡", "quantity": 1, "originalSubtotal": 2250, "subtotal": 2250},
+        {"productCode": "4810", "productName": "中薯条", "quantity": 1, "originalSubtotal": 1350, "subtotal": 1350}
+      ],
+      "takeWayList": [
+        {"code": "eat-in", "title": "堂食", "subtitle": "店内用餐"},
+        {"code": "locker-out", "title": "外带", "subtitle": "店外取餐柜"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "_comment": "本文件只含变量名占位符，不含任何真实 Token。真实凭证请放在环境变量或未纳入版本控制的文件中。",
+  "mcpServers": {
+    "mcd-mcp": {
+      "type": "streamablehttp",
+      "url": "${MCD_MCP_URL}",
+      "headers": {
+        "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+      }
+    }
+  }
+}
