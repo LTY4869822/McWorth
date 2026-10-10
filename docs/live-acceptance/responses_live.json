@@ -1,0 +1,154 @@
+[
+  {
+    "request_id": "qr-0",
+    "session_id": "live-acceptance",
+    "intent_revision": 1,
+    "context_key": "store=1450713;order_type=1;be_type=1",
+    "cart_hash": "cart:sha256:edc58d0078dfe762",
+    "source_mode": "live",
+    "captured_at": "2026-10-10T09:18:28.508283+00:00",
+    "trace_id": "5fadd7a338352d7640a016e8c0d93d71",
+    "official_payload": {
+      "storeCode": "1450713",
+      "orderType": 1,
+      "beType": 1,
+      "items": [
+        {
+          "productCode": "1440",
+          "quantity": 1
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1
+        }
+      ]
+    },
+    "response": {
+      "success": true,
+      "code": 200,
+      "message": "请求成功",
+      "datetime": "2026-10-10 17:18:30",
+      "traceId": "5fadd7a338352d7640a016e8c0d93d71",
+      "data": {
+        "productOriginalPrice": 3600,
+        "productPrice": 3600,
+        "originalPrice": 3600,
+        "discount": 0,
+        "price": 3600,
+        "productList": [
+          {
+            "productCode": "1440",
+            "productName": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "originalSubtotal": 2250,
+            "subtotal": 2250
+          },
+          {
+            "productCode": "4810",
+            "productName": "中薯条",
+            "quantity": 1,
+            "originalSubtotal": 1350,
+            "subtotal": 1350
+          }
+        ],
+        "takeWayList": [
+          {
+            "code": "eat-in",
+            "title": "堂食",
+            "subtitle": "店内用餐"
+          },
+          {
+            "code": "locker-out",
+            "title": "外带",
+            "subtitle": "店外取餐柜"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request_id": "qr-1",
+    "session_id": "live-acceptance",
+    "intent_revision": 1,
+    "context_key": "store=1450713;order_type=1;be_type=1",
+    "cart_hash": "cart:sha256:853ced8880b16a2d",
+    "source_mode": "live",
+    "captured_at": "2026-10-10T09:18:28.945385+00:00",
+    "trace_id": "679b74e3147deb618226fab54fed826a",
+    "official_payload": {
+      "storeCode": "1450713",
+      "orderType": 1,
+      "beType": 1,
+      "items": [
+        {
+          "productCode": "9900005456",
+          "quantity": 1,
+          "roundList": [
+            {
+              "round": "1",
+              "comboItemList": [
+                {
+                  "code": "1440",
+                  "quantity": 1
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "comboItemList": [
+                {
+                  "code": "4810",
+                  "quantity": 1
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "comboItemList": [
+                {
+                  "code": "3050",
+                  "quantity": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "response": {
+      "success": true,
+      "code": 200,
+      "message": "请求成功",
+      "datetime": "2026-10-10 17:18:31",
+      "traceId": "679b74e3147deb618226fab54fed826a",
+      "data": {
+        "productOriginalPrice": 3350,
+        "productPrice": 3350,
+        "originalPrice": 3350,
+        "discount": 0,
+        "price": 3350,
+        "productList": [
+          {
+            "productCode": "9900005456",
+            "productName": "麦辣鸡腿汉堡三件套",
+            "quantity": 1,
+            "originalSubtotal": 3350,
+            "subtotal": 3350
+          }
+        ],
+        "takeWayList": [
+          {
+            "code": "eat-in",
+            "title": "堂食",
+            "subtitle": "店内用餐"
+          },
+          {
+            "code": "locker-out",
+            "title": "外带",
+            "subtitle": "店外取餐柜"
+          }
+        ]
+      }
+    }
+  }
+]
