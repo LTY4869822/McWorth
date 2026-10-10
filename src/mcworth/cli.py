@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from importlib import resources
 from pathlib import Path
 from typing import Any
@@ -205,6 +206,11 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
         "historical_replay": EvidenceSource.SNAPSHOT,
         "synthetic": EvidenceSource.SYNTHETIC,
     }
+
+    def _offer_items(payload: dict) -> set[tuple[str, int]]:
+        """官方请求的顶层（商品, 数量）集合——用于与响应 productList 对账。"""
+        return sorted((str(i["productCode"]), int(i["quantity"])) for i in payload.get("items", []))  # type: ignore[return-value]
+
     records: list[dict[str, Any]] = []
     errors: list[str] = []
     for idx, item in enumerate(responses):
@@ -213,6 +219,22 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
             errors.append(f"响应 #{idx} 的 cart_hash 不在 plan 的待核价清单中，已跳过")
             continue
         req = known[ch]
+        # F01（v0.2.1）：响应身份必须与任务一致——cart_hash 匹配不构成身份证明。
+        # request_id / session_id / intent_revision / context_key 任一不符即拒绝，
+        # 防止复制错文件、异步响应串线或宿主配对错误把别的报价当成本次报价。
+        identity_fields = (
+            ("request_id", item.get("request_id"), req.get("request_id")),
+            ("session_id", item.get("session_id"), req.get("session_id")),
+            ("intent_revision", item.get("intent_revision"), req.get("intent_revision")),
+            ("context_key", item.get("context_key"), ctx),
+        )
+        mismatched = [name for name, got, want in identity_fields if got != want]
+        if mismatched:
+            errors.append(
+                f"响应 #{idx} 身份不符（{', '.join(mismatched)} 与计划不一致），已拒绝——"
+                "cart_hash 匹配不构成身份证明"
+            )
+            continue
         mode = item.get("source_mode", "live")
         if mode not in mode_source:
             errors.append(f"响应 #{idx} 的 source_mode 非法: {mode!r}，已跳过")
@@ -228,12 +250,24 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
         except ValueError as exc:
             errors.append(f"响应 #{idx} 解析失败：{exc}")
             continue
+        # F01：响应商品行与请求对账——返回的商品清单与请求的购物车不符时，
+        # 这个金额不能记在这笔购物车头上。
+        resp_items = sorted((i.product_code, i.quantity) for i in quote.items)
+        want_items = _offer_items(req.get("official_payload") or {})
+        if resp_items and want_items and resp_items != want_items:
+            errors.append(
+                f"响应 #{idx} 的商品清单与请求不符（响应 {resp_items} ≠ 请求 {want_items}），已拒绝"
+            )
+            continue
         quote.context_key = ctx
         records.append(
             QuoteRecord(
-                request_id=req.get("request_id", f"qr-{idx}"),
+                request_id=req["request_id"],
                 context_key=ctx,
                 cart_hash=ch,
+                # F03：抄录生成该请求的任务与需求版本，report 据此判断适用性
+                session_id=req.get("session_id", ""),
+                intent_revision=int(req.get("intent_revision", 0)),
                 captured_at=item.get("captured_at"),
                 source_mode=mode,  # type: ignore[arg-type]
                 total_fen=quote.total_fen,
@@ -248,13 +282,14 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
             ).model_dump(mode="json")
         )
     out = {
-        "schema_version": "1",
+        "schema_version": "2",
         "context_key": ctx,
         "records": records,
         "errors": errors,
         "notes": [
             "live 报价仅代表采集时刻的官方核价，下单前请以最终订单确认为准。",
             "缺失的费用组件为 null（未知），不代表为 0。",
+            "records 已绑定 session_id / intent_revision；需求变更后旧报价不会自动适用于新推荐。",
         ],
     }
     if args.output:
@@ -267,6 +302,26 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
 
 # ---------------------------------------------------------------- report
 
+# v0.2.1（F02）：live 报价的新鲜度阈值（小时）。这是本地复查策略，
+# 不是官方价格有效期保证。到期不删除记录，只不再用于主推荐。
+QUOTE_FRESHNESS_HOURS = 6
+
+
+def _quote_is_fresh(captured_at: str | None) -> bool:
+    """live 报价时效检查：无时间戳 / 无法解析 / 未来时间异常 / 超阈值 → 不新鲜。"""
+    if not captured_at:
+        return False
+    try:
+        dt = datetime.fromisoformat(captured_at)
+    except ValueError:
+        return False
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    if dt > now + timedelta(hours=1):   # 未来时间异常
+        return False
+    return (now - dt) <= timedelta(hours=QUOTE_FRESHNESS_HOURS)
+
 
 def cmd_report(args: argparse.Namespace) -> int:
     intent = MealIntent.model_validate(_read_json(Path(args.intent)))
@@ -275,20 +330,56 @@ def cmd_report(args: argparse.Namespace) -> int:
     quotes_raw = _read_json(Path(args.quotes))
 
     quotes: dict[str, VerifiedQuote] = {}
+    rejected: list[str] = []
     for r in quotes_raw.get("records") or []:
         rec = QuoteRecord.model_validate(r)
         if rec.quote is None:
+            continue
+        # F03（v0.2.1）：报价必须属于当前会话与需求版本。
+        # 空值 = 旧格式记录未携带版本信息，按不适用处理，宁可重新核价。
+        if rec.session_id and rec.session_id != intent.session_id:
+            rejected.append(
+                f"报价 {rec.cart_hash[:24]} 来自旧会话 {rec.session_id!r}（当前 {intent.session_id!r}），不适用"
+            )
+            continue
+        if rec.intent_revision and rec.intent_revision != intent.revision:
+            rejected.append(
+                f"报价 {rec.cart_hash[:24]} 来自旧版本 revision={rec.intent_revision}（当前 {intent.revision}），不适用"
+            )
+            continue
+        # F02：live 报价过时效 → 保留记录但不再支撑当前推荐
+        if rec.source_mode == "live" and not _quote_is_fresh(rec.captured_at):
+            rejected.append(
+                f"报价 {rec.cart_hash[:24]} 已超过 {QUOTE_FRESHNESS_HOURS} 小时新鲜度阈值"
+                f"（采集于 {rec.captured_at}），需重新核价后才能用于推荐"
+            )
             continue
         quote = VerifiedQuote.model_validate(rec.quote)
         quote.context_key = rec.context_key
         quotes[rec.cart_hash] = quote
 
     result = solve_exact_plate(intent, menu, combos, quotes)
-    print(render_result_card(result))
+    # F02：贯穿展示与 JSON 的运行口径——不能让回放/合成数据伪装成实时推荐
+    used_modes = {rec.source_mode for rec in map(QuoteRecord.model_validate, quotes_raw.get("records") or [])
+                  if rec.cart_hash in quotes}
+    if len(used_modes) > 1:
+        run_mode = "mixed"
+    elif used_modes:
+        run_mode = next(iter(used_modes))
+    else:
+        run_mode = "none"
+    print(render_result_card(result, run_mode=run_mode))
+    if rejected:
+        print(f"\n⚠ {len(rejected)} 条报价未通过适用性检查：")
+        for msg in rejected:
+            print(f"  - {msg}")
     if args.json:
         summary = {
             "status": result.status.value,
+            "source_mode": run_mode,
+            "freshness_hours": QUOTE_FRESHNESS_HOURS,
             "blockers": result.blockers,
+            "rejected_quotes": rejected,
             "main": None
             if result.main is None
             else {
@@ -385,6 +476,13 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         mark = "OK" if got == expect else "FAIL"
         ok = ok and got == expect
         print(f"  [{mark}] 金额 {s!r} -> {got} 分（期望 {expect}）")
+    # v0.2.1（F04）：可选能力单独检查——缺失不影响核心功能
+    try:
+        import playwright  # noqa: F401
+
+        print("  [OK] 图片导出（playwright 已安装）")
+    except ImportError:
+        print("  [--] 图片导出未启用（可选：pip install playwright && playwright install chromium）")
     print("诊断只返回能力结果，不打印凭证。")
     return 0 if ok else 1
 

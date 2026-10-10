@@ -81,12 +81,14 @@ pip install dist/mcworth-*.whl     # 或源码安装：pip install -e ".[dev]"
 McWorth 的核心是三个命令之间的 JSON 文件交接，**全程不发起网络调用**——联网部分（调 MCP 工具）由宿主 Agent 完成：
 
 ```text
-mcworth plan        意图+菜单 → 候选组合 + 核价请求（cart_hash + official_payload）
-mcworth ingest-quotes  官方核价响应 → 校验后的报价记录（cart_hash 对账）
-mcworth report      → 可复核结果卡（分类、措辞、基准、traceId）
+mcworth plan        意图+菜单 → 候选组合 + 核价请求（request_id / cart_hash + official_payload）
+mcworth ingest-quotes  官方核价响应 → 身份与商品对账校验后的报价记录
+mcworth report      → 可复核结果卡（分类、措辞、基准、时效、traceId）
 ```
 
-宿主侧的完整编排方式见 [`skills/mcworth/SKILL.md`](./skills/mcworth/SKILL.md)。
+宿主侧的完整编排方式（含 responses.json 逐字段说明）见 [`skills/mcworth/SKILL.md`](./skills/mcworth/SKILL.md)。
+
+**报价可信规则（v0.2.1）**：核价响应必须携带与 plan 一致的 `request_id` / `session_id` / `intent_revision` / `context_key`，且返回的商品清单要与请求对账——cart_hash 匹配不构成身份证明，错任务、错门店、错商品的响应一律拒绝。`live` 报价超过 6 小时新鲜度阈值（本地复查策略，非官方保价承诺）不再支撑主推荐；历史回放与合成演示会在结果卡上明确标注，不会伪装成实时价格。
 
 ### 本地演示
 
@@ -106,9 +108,9 @@ mcworth demo --extras-policy allow   # 明确授权后，看看接受套餐增�
 
 ## 当前状态与边界
 
-**已完成（v0.2.0）**：固定餐盘模式全链路。读取真实菜单 → 解析套餐轮次结构（回溯搜索处理 min=0 可选轮 / min>1 强制多选）→ 构造候选购买组合 → 官方整单核价（cart_hash 上下文对账，拒绝张冠李戴的报价）→ 分类（相同餐盘 / 增量 / 替换）→ 按策略与偏好过滤排序 → 输出可复核结果卡。
+**已完成（v0.2.1）**：固定餐盘模式全链路。读取真实菜单 → 解析套餐轮次结构（回溯搜索处理 min=0 可选轮 / min>1 强制多选 / 选项级数量上限）→ 构造候选购买组合（含用户授权的加购选项）→ 官方整单核价（身份四元组 + 商品清单对账，live 报价时效检查）→ 分类（相同餐盘 / 增量 / 替换）→ 按策略与偏好过滤排序 → 输出可复核结果卡（回放/演示模式明确标注）。
 
-46 项测试守护五条不变量，其中 24 项来自第三方审查反例的回归组。
+57 项测试守护五条不变量，其中 35 项来自两轮独立审查反例的回归组。
 
 **尚未实现**：优惠券与卡券参与计价、多餐盘预算配餐模式、订单创建。这些都还在设计阶段——README 里没写的就没有，不会悄悄上线。
 

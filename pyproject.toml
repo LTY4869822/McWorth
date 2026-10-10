@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcworth"
-version = "0.2.0"
+version = "0.2.1"
 description = "麦麦如意餐 McWorth：保住你想吃的，找到更省的买法"
 readme = "README.md"
 requires-python = ">=3.11"

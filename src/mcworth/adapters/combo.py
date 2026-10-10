@@ -15,6 +15,23 @@ from ..domain.types import (
 )
 
 
+def _choice_max_quantity(c: dict) -> int | None:
+    """选项级数量上限（v0.2.1 F06）。
+
+    官方字段 maxQuantity：正整数 = 真实上限；-1 等负值是"未设置"哨兵，
+    语义以真实接口约定为准——此处一律视为无上限（None），不猜测。
+    quantity（默认选中量）不是容量，不得混用。
+    """
+    raw = c.get("maxQuantity")
+    if raw is None:
+        return None
+    try:
+        v = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return v if v > 0 else None
+
+
 def parse_combo_detail(raw: dict, evidence: EvidenceRef) -> ComboConfig:
     if not isinstance(raw, dict) or raw.get("success") is not True:
         raise ValueError(f"query-meal-detail 响应异常: {raw.get('message', '非对象')}")
@@ -28,6 +45,7 @@ def parse_combo_detail(raw: dict, evidence: EvidenceRef) -> ComboConfig:
                 diff_price_fen=yuan_str_to_fen(str(c.get("diffPrice", "+ ¥0"))),
                 is_default=int(c.get("isDefault", 0)) == 1,
                 support_modify=bool(c.get("supportModify", False)),
+                max_quantity=_choice_max_quantity(c),
             )
             for c in rnd.get("choices") or []
             if "code" in c

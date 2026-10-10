@@ -275,11 +275,18 @@ class QuoteRequest(BaseModel):
 
 
 class QuoteRecord(BaseModel):
-    """一条已完成上下文校验的报价记录（优化方案 A6 拟议内部字段）。"""
+    """一条已完成上下文校验的报价记录。
+
+    v0.2.1（F03）：绑定生成它的任务与需求版本——session_id / intent_revision
+    由 ingest 阶段从 plan 的 quote_request 原样抄录，report 阶段据此判断
+    旧报价是否适用于当前需求。空值表示记录格式未包含版本信息（旧版兼容）。
+    """
 
     request_id: str
     context_key: str
     cart_hash: str
+    session_id: str = ""
+    intent_revision: int = 0
     captured_at: Optional[str] = None
     # live：本次会话实时官方返回；historical_replay：官方快照回放；synthetic：合成
     source_mode: Literal["live", "historical_replay", "synthetic"]
@@ -377,6 +384,9 @@ class ComboChoice(BaseModel):
     diff_price_fen: int          # 相对套餐默认项的带符号差价（分）
     is_default: bool = False
     support_modify: bool = False
+    # 单个选项在该轮最多可选份数（v0.2.1 F06）。
+    # None = 官方未返回上限（历史样本多为 -1 哨兵值，语义以真实接口约定为准）。
+    max_quantity: Optional[int] = None
 
 
 class ComboRound(BaseModel):

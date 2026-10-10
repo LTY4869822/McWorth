@@ -329,9 +329,12 @@ def _round_selections(rnd: ComboRound, remaining: dict[str, int]) -> list[dict[s
     """枚举某一轮从「需求商品 ∩ 该轮可选」中可选取的多重集。
 
     每个多重集总量不超过 min(max_quantity, 剩余需求)，可为空集 {}。
+    v0.2.1（F06）：同时尊重选项级上限 choice.max_quantity——
+    轮容量不授予单项超量（容量=2、A.max=1 时不得生成 A×2）。
     只考虑需求商品：非需求的填充统一交给 fill 策略处理，
     因此可选集大小受需求品类数限制（通常 ≤5），不会组合爆炸。
     """
+    choice_max = {c.code: c.max_quantity for c in rnd.choices}
     available = [c.code for c in rnd.choices if remaining.get(c.code, 0) > 0]
     if not available:
         return [{}]
@@ -342,7 +345,10 @@ def _round_selections(rnd: ComboRound, remaining: dict[str, int]) -> list[dict[s
             outs.append(dict(cur))
             return
         code = available[idx]
+        cap = choice_max.get(code)
         room = min(rnd.max_quantity - total, remaining[code])
+        if cap is not None:
+            room = min(room, cap)
         # 数量降序枚举：优先把需求放进套餐（纯套餐路径先于混合路径出现）
         for take in range(room, -1, -1):
             if take:
@@ -386,6 +392,17 @@ def _fill_choice(rnd: ComboRound, fill: str):
     return default_fill(rnd) if fill == "default" else cheapest_fill(rnd)
 
 
+def _fill_candidates(rnd: ComboRound, fill: str) -> list:
+    """v0.2.1（F06）：填充候选按优先级排列——主策略项优先，
+    其余选项按差价升序跟随。逐个尝试直到找到能合法装下下限的选项。"""
+    primary = default_fill(rnd) if fill == "default" else cheapest_fill(rnd)
+    outs = [primary]
+    for c in sorted(rnd.choices, key=lambda c: c.diff_price_fen):
+        if c.code != primary.code:
+            outs.append(c)
+    return outs
+
+
 def _materialize(
     intent: MealIntent,
     menu: MenuSnapshot,
@@ -395,14 +412,19 @@ def _materialize(
     remaining: dict[str, int],
     fill: str,
     *,
+    fill_alt: Optional["object"] = None,
     keep_free_negative_rounds: bool = False,
 ) -> Optional[PathSolution]:
     """把一个分配方案物化为购买路径。
 
     - 分配数不足 min_quantity 的轮用 fill 策略补足；
+      v0.2.1（F05）：fill_alt 是用户 allowed_extras 授权的备选填充项——
+      该轮可选时优先用它，使"只允许茶"这类授权组合能被搜索到；
     - min=0 且无分配的轮默认整轮跳过（exact_plate 的精确路径）；
       keep_free_negative_rounds=True 时改为填入负差价项（cheapest 模式的
       "多拿一份还更便宜"候选，仅在用户允许增量时可能合格）；
+    - v0.2.1（F06）：填充份数受选项级 max_quantity 约束，无法满足轮次下限
+      的填充直接返回 None（该变体不存在），不生成非法请求；
     - 剩余需求由单品补购（套餐＋单品路径）。
     """
     rounds_out: list[OfferRound] = []
@@ -433,18 +455,33 @@ def _materialize(
             else:
                 continue
         elif n < rnd.min_quantity:
-            fc = _fill_choice(rnd, fill)
+            # v0.2.1（F06）：填充选项按优先级尝试——fill_alt（用户授权项）→
+            # 主策略（默认/最低差价）→ 同轮其余选项；每个候选都要通过选项级
+            # 上限检查，全部装不下时该路径不存在（不生成非法请求）。
             need = rnd.min_quantity - n
-            merged = False
-            for it in items:
-                if it.code == fc.code:
-                    it.quantity += need
-                    merged = True
-                    break
-            if not merged:
-                items.append(OfferRoundItem(code=fc.code, quantity=need))
-            plate_rows.append(_atom_for(menu, fc.code, need, fallback_name=fc.name))
-            reference += fc.diff_price_fen * need
+            already_by_code = {it.code: it.quantity for it in items}
+            candidates: list = []
+            if fill_alt is not None and fill_alt.code in choice_map:
+                candidates.append(fill_alt)
+            candidates.extend(_fill_candidates(rnd, fill))
+            filled = False
+            for fc in candidates:
+                already = already_by_code.get(fc.code, 0)
+                if fc.max_quantity is not None and already + need > fc.max_quantity:
+                    continue
+                if fc.code in already_by_code:
+                    for it in items:
+                        if it.code == fc.code:
+                            it.quantity += need
+                            break
+                else:
+                    items.append(OfferRoundItem(code=fc.code, quantity=need))
+                plate_rows.append(_atom_for(menu, fc.code, need, fallback_name=fc.name))
+                reference += fc.diff_price_fen * need
+                filled = True
+                break
+            if not filled:
+                return None  # 该轮没有任何选项能合法装下下限：此路径不存在
         if items:
             rounds_out.append(OfferRound(round_id=str(rnd.round_id), items=items))
 
@@ -472,7 +509,11 @@ def _materialize(
 def build_combo_paths(
     intent: MealIntent, menu: MenuSnapshot, combo: ComboConfig, fill: str
 ) -> list[PathSolution]:
-    """套餐覆盖路径（含套餐＋单品混合）。fill = "default" | "cheapest"。"""
+    """套餐覆盖路径（含套餐＋单品混合）。fill = "default" | "cheapest"。
+
+    v0.2.1（F05）：用户 allowed_extras 授权的选项也会作为填充候选——
+    每个 (fill 策略 × 授权选项) 组合物化为独立变体，再由上层按 cart_hash 去重。
+    """
     base_info = menu.meals.get(combo.code)
     if base_info is None:
         return []
@@ -485,20 +526,35 @@ def build_combo_paths(
     if not demand:
         return []
 
+    # 授权增量选项 ∩ 本套餐可选集（每轮选项并集）
+    fill_alts = []
+    if intent.allowed_extras:
+        allowed_codes = {e.code for e in intent.allowed_extras}
+        seen: set[str] = set()
+        for rnd in combo.rounds:
+            for c in rnd.choices:
+                if c.code in allowed_codes and c.code not in seen:
+                    fill_alts.append(c)
+                    seen.add(c.code)
+
     paths: list[PathSolution] = []
     for remaining, placed in _enumerate_assignments(combo.rounds, demand):
         total_placed = sum(q for _, sel in placed for q in sel.values())
         if total_placed == 0:
             continue  # 套餐内没有任何需求商品的路径没有比较价值
-        path = _materialize(intent, menu, combo, base_info.current_price_fen, placed, remaining, fill)
-        if path is not None:
-            paths.append(path)
+        for alt in [None, *fill_alts]:
+            path = _materialize(
+                intent, menu, combo, base_info.current_price_fen,
+                placed, remaining, fill, fill_alt=alt,
+            )
+            if path is not None:
+                paths.append(path)
         if fill == "cheapest":
             # 负差价可选轮的"占便宜"变体（多拿一份还更便宜）
             variant = _materialize(
-                intent, menu, combo, base_info.current_price_fen, placed, remaining, fill,
-                keep_free_negative_rounds=True,
+                intent, menu, combo, base_info.current_price_fen,
+                placed, remaining, fill, keep_free_negative_rounds=True,
             )
-            if variant is not None and variant.cart_hash != (path.cart_hash if path else None):
+            if variant is not None:
                 paths.append(variant)
     return paths

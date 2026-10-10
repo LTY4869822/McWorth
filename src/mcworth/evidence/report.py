@@ -24,6 +24,23 @@ _BASELINE_LABELS = {
     "constructed_singles": "与单品分别购买相比",
 }
 
+# v0.2.1（F02）：运行口径贯穿展示——回放/合成数据不得伪装成实时推荐。
+_MODE_ANNOUNCE = {
+    "live": None,
+    "historical_replay": "⚠ 历史回放模式：以下金额来自官方快照回放，非当前实时核价",
+    "synthetic": "⚠ 合成演示模式：以下金额为演示数据，非官方实时核价",
+    "mixed": "⚠ 混合来源：结果同时包含实时与回放/演示报价，请以报价来源为准",
+    "none": None,
+}
+
+_MODE_PRICE_LABEL = {
+    "live": "官方整单核价",
+    "historical_replay": "回放核价（历史快照）",
+    "synthetic": "演示核价（合成数据）",
+    "mixed": "核价（来源混合）",
+    "none": "官方整单核价",
+}
+
 
 def same_plate_delta_fen(baseline: PathSolution, candidate: PathSolution) -> Optional[int]:
     """已核价同餐盘差额。餐盘不一致时返回 None（那是方案差额，不是节省）。"""
@@ -34,9 +51,18 @@ def same_plate_delta_fen(baseline: PathSolution, candidate: PathSolution) -> Opt
     return baseline.quote.total_fen - candidate.quote.total_fen
 
 
-def render_result_card(result: SolveResult) -> str:
-    """渲染可复核结果卡（方案 12.3 的结构）。"""
+def render_result_card(result: SolveResult, run_mode: str = "live") -> str:
+    """渲染可复核结果卡（方案 12.3 的结构）。
+
+    v0.2.1（F02）：run_mode（live / historical_replay / synthetic / mixed）
+    决定金额标签与模式声明——回放与演示不会被渲染成实时推荐。
+    """
     lines: list[str] = []
+    announce = _MODE_ANNOUNCE.get(run_mode)
+    price_label = _MODE_PRICE_LABEL.get(run_mode, "官方整单核价")
+    if announce:
+        lines.append(announce)
+        lines.append("")
     intent = result.intent
     keep = "、".join(f"{req.name}×{req.quantity}" for req in intent.required)
     lines.append(f"保留：{keep}")
@@ -56,7 +82,7 @@ def render_result_card(result: SolveResult) -> str:
             "extras": "餐盘有增量",
             "substitution": "更换了餐品",
         }[p.classification]
-        detail = f"{p.label or p.combo_code or '路径'} · {tag} · 官方核价 ¥{fen_to_yuan(p.quote.total_fen)}"
+        detail = f"{p.label or p.combo_code or '路径'} · {tag} · {price_label} ¥{fen_to_yuan(p.quote.total_fen)}"
         if p.classification == "extras" and p.extra_atoms:
             names = "、".join(f"{a.name}×{a.quantity}" for a in p.extra_atoms)
             detail += f"（多出：{names}）"
@@ -90,7 +116,7 @@ def render_result_card(result: SolveResult) -> str:
         lines.append("调整：仅购买组合变化，餐品与规格未变化")
     else:
         lines.append(f"调整：{main.classification}（增量/替换见上）")
-    lines.append(f"官方整单核价：¥{fen_to_yuan(quote.total_fen)}")
+    lines.append(f"{price_label}：¥{fen_to_yuan(quote.total_fen)}")
     lines.append(f"报价来源：{quote.evidence.label()}")
 
     base = result.baseline

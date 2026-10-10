@@ -1,9 +1,9 @@
 ---
 name: mcworth
 description: 根据用户想吃的餐品、份量和预算，比较购买组合，使用麦当劳 MCP 核价并给出可复核的购买建议。
-description_zh: 保留想吃的餐品，计算更省的买法，也可按预算配餐。
+description_zh: 保留想吃的餐品，计算更省的买法（固定餐盘模式；预算配餐尚未实现）。
 description_en: Plan a satisfying meal within budget and compare verified purchase options using McDonald's MCP.
-version: 0.2.0
+version: 0.2.1
 author: McWorth contributors
 ---
 
@@ -55,22 +55,43 @@ author: McWorth contributors
 
 ```text
 ① mcworth plan --intent intent.json --menu menu.json --combos combos.json -o plan.json
-   输入：用户意图 + 官方工具响应（query-meals / query-meal-detail 的原始 JSON）
-   输出：候选购买组合列表 + quote_requests（每条含 cart_hash 与官方 official_payload）
+   输入：intent.json 为 MealIntent 结构（裸 JSON）；
+        menu.json / combos.json 为宿主留存封装 {"_meta": {...}, "response": {...}}
+        （_meta 是本工具的溯源封装：trace_id、captured_at、store_code 等，
+         不是官方响应的一部分——不要把封装文件描述为"原始官方 JSON"）
+   输出：候选购买组合列表 + quote_requests（每条含 request_id / session_id /
+        intent_revision / cart_hash 与官方 official_payload）
 
-② 宿主按 quote_requests 调用麦当劳 MCP 的 calculate-price，收集响应
+② 宿主按 quote_requests 调用麦当劳 MCP 的 calculate-price，收集响应。
+   responses.json 每条记录的最小结构：
+   {
+     "request_id":       "qr-0",                        // 抄自 plan 的对应请求
+     "session_id":       "...",                         // 抄自 plan 的 intent
+     "intent_revision":  1,                             // 抄自 plan 的 intent
+     "context_key":      "store=...;order_type=...;be_type=...",  // 抄自 plan 的 context
+     "cart_hash":        "cart:sha256:...",             // 抄自 plan 的对应请求
+     "source_mode":      "live",                        // live | historical_replay | synthetic
+     "captured_at":      "2026-10-10T13:00:00+08:00",   // 实际调用时间
+     "trace_id":         "官方返回的 traceId",
+     "response":         { ...官方 calculate-price 响应原文... }
+   }
+   身份四元组 + cart_hash 必须由宿主从 plan 原样抄录，不得凭记忆重写。
 
 ③ mcworth ingest-quotes --plan plan.json --responses responses.json -o quotes.json
-   输入：plan.json + 官方核价响应
-   输出：通过上下文与金额校验的报价记录（0 问题才继续）
+   输入：plan.json + responses.json
+   校验：身份四元组与 cart_hash 必须匹配；响应商品清单与请求对账；
+        不符的响应被拒绝并计入 errors（宁可少推荐，不错账）。
+   输出：通过校验的报价记录（已绑定 session_id / intent_revision）。
 
-④ mcworth report --intent intent.json --menu menu.json --combos combos.json --quotes quotes.json
-   输出：可复核结果卡（分类、措辞、对照基准、traceId）
+④ mcworth report --intent intent.json --menu menu.json [--combos combos.json] --quotes quotes.json
+   校验：报价与会话/版本不符 → 不适用；live 报价超过 6 小时新鲜度阈值 →
+        不用于主推荐（阈值是本地复查策略，非官方保价承诺）。
+   输出：可复核结果卡 + JSON 摘要（含 source_mode 与 rejected_quotes）。
 ```
 
 **关键规则**：
 - 报价以 `cart_hash` 与候选对账，对不上的响应会被拒绝并计入问题数。
-- `source_mode` 必须如实标注：`live`（本次实时核价）/ `historical_replay`（官方快照回放）/ `synthetic`（合成演示）。只有 `live` 可用于对用户的正式推荐；快照回放只用于演示与复现。
+- `source_mode` 必须如实标注：`live`（本次实时核价）/ `historical_replay`（官方快照回放）/ `synthetic`（合成演示）。只有 `live` 且通过时效检查的报价可支撑对用户的正式推荐；回放与演示结果会在结果卡上明确标注。
 - 任何候选缺少官方核价时保持"未核价"状态，**不得**掉回本地估算充当报价。
 
 ### 4. 分类与展示
