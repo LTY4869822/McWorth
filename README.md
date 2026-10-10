@@ -41,11 +41,12 @@ combo-default · 餐盘有增量 · 官方核价 ¥33.50（多出：可乐中杯
 ```text
 $ mcworth demo --extras-policy allow
 
-── 与原购买计划比较 ────────────────
-原计划（单品直购）核价：¥36.00
-与原购买组合相比：低 ¥2.50
-（注意：餐盘不完全一致，这是方案差额，不是无代价节省）
+── 与单品分别购买相比 ────────────────
+对照基准（单品分别购买）核价：¥36.00
+与单品分别购买相比：低 ¥2.50（注意：餐盘不完全一致，这是方案差额，不是无代价节省）
 ```
+
+注意基准的说法：这个对照是**系统构造的全单品直购**，不是"你的原计划"——因为本轮你并没有告诉我们你原本打算怎么买。只有你提供了原购物车，我们才会说"与您的原计划相比"。
 
 这不是文案洁癖。餐盘一旦变了，"省了多少"就是个错账。
 
@@ -68,12 +69,26 @@ $ mcworth demo --extras-policy allow
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+pip install dist/mcworth-*.whl     # 或源码安装：pip install -e ".[dev]"
 ```
 
 前置条件：已在宿主客户端（如 WorkBuddy / Claude Desktop / Cursor）配置好麦当劳 MCP 连接。配置模板见 [`mcp-config.example.json`](./mcp-config.example.json)，**其中只含变量名占位符，请务必不要把真实 Token 提交入库**。
 
 ## 使用
+
+### 三个只读命令（宿主编排协议）
+
+McWorth 的核心是三个命令之间的 JSON 文件交接，**全程不发起网络调用**——联网部分（调 MCP 工具）由宿主 Agent 完成：
+
+```text
+mcworth plan        意图+菜单 → 候选组合 + 核价请求（cart_hash + official_payload）
+mcworth ingest-quotes  官方核价响应 → 校验后的报价记录（cart_hash 对账）
+mcworth report      → 可复核结果卡（分类、措辞、基准、traceId）
+```
+
+宿主侧的完整编排方式见 [`skills/mcworth/SKILL.md`](./skills/mcworth/SKILL.md)。
+
+### 本地演示
 
 ```bash
 mcworth doctor                # 环境自检（只报能力结果，不打印凭证）
@@ -81,9 +96,7 @@ mcworth demo                  # 用官方 MCP 实测快照跑一遍求解
 mcworth demo --extras-policy allow   # 明确授权后，看看接受套餐增量会发生什么
 ```
 
-> `demo` 的数据来自 `tests/fixtures/` 下留存的真实 MCP 响应快照（含官方 traceId 与采集时间），**不发起网络调用**。这意味着你可以在完全离线的环境里复现上文的结论，也意味着它不会替你下任何单。
-
-作为 Skill 使用时，Agent 侧的编排方式见 [`skills/mcworth/SKILL.md`](./skills/mcworth/SKILL.md)。
+> `demo` 的数据来自包内留存的真实 MCP 响应快照（含官方 traceId 与采集时间），**不发起网络调用**。这意味着你可以在完全离线的环境里复现上文的结论，也意味着它不会替你下任何单。
 
 ## 目标用户
 
@@ -93,7 +106,9 @@ mcworth demo --extras-policy allow   # 明确授权后，看看接受套餐增�
 
 ## 当前状态与边界
 
-**已完成**：固定餐盘模式的骨架。读取真实菜单 → 解析套餐轮次结构 → 构造候选购买组合 → 官方整单核价 → 分类（相同餐盘 / 增量 / 替换）→ 按策略过滤排序 → 输出可复核结果卡。
+**已完成（v0.2.0）**：固定餐盘模式全链路。读取真实菜单 → 解析套餐轮次结构（回溯搜索处理 min=0 可选轮 / min>1 强制多选）→ 构造候选购买组合 → 官方整单核价（cart_hash 上下文对账，拒绝张冠李戴的报价）→ 分类（相同餐盘 / 增量 / 替换）→ 按策略与偏好过滤排序 → 输出可复核结果卡。
+
+46 项测试守护五条不变量，其中 24 项来自第三方审查反例的回归组。
 
 **尚未实现**：优惠券与卡券参与计价、多餐盘预算配餐模式、订单创建。这些都还在设计阶段——README 里没写的就没有，不会悄悄上线。
 
@@ -106,13 +121,15 @@ mcworth demo --extras-policy allow   # 明确授权后，看看接受套餐增�
 ```text
 src/mcworth/
 ├── domain/      # 意图、餐盘、报价、证据（金额一律整数分）
-├── adapters/    # 官方响应 schema → 内部类型
-├── solver/      # 固定餐盘的两层求解与分类
-├── evidence/    # 差额记账与结果卡渲染
-└── cli.py
+├── adapters/    # 官方响应 schema → 内部类型（严格金额校验）
+├── solver/      # 固定餐盘的回溯求解、合格性判定与偏好排序
+├── evidence/    # 差额记账与结果卡渲染（baseline_origin）
+├── data/        # 包内演示快照（安装即用）
+└── cli.py       # plan / ingest-quotes / report / demo / doctor
 tests/
 ├── contract/    # 官方响应结构漂移守护
 ├── solver/      # 五条不变量的可执行定义
+├── regressions/ # 审查反例回归组（24 项）
 └── fixtures/    # 脱敏的官方实测快照
 ```
 

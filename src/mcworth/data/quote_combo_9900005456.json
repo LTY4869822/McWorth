@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "tool": "calculate-price",
+    "captured_at": "2026-10-09 20:41:27",
+    "trace_id": "32139972913f2ce32e0c4e0a5f4b31b7",
+    "store_code": "1450713",
+    "order_type": 1,
+    "be_type": 1,
+    "cart": "麦辣鸡腿汉堡三件套×1（round1=麦辣鸡腿汉堡, round2=中薯条, round3=可乐中杯）",
+    "offer": [
+      {
+        "product_code": "9900005456",
+        "quantity": 1,
+        "rounds": [
+          {"round": "1", "items": [{"code": "1440", "quantity": 1}]},
+          {"round": "2", "items": [{"code": "4810", "quantity": 1}]},
+          {"round": "3", "items": [{"code": "3050", "quantity": 1}]}
+        ]
+      }
+    ],
+    "projection": "完整实测响应原文，未做删改。"
+  },
+  "response": {
+    "success": true,
+    "code": 200,
+    "message": "请求成功",
+    "datetime": "2026-10-09 20:41:27",
+    "traceId": "32139972913f2ce32e0c4e0a5f4b31b7",
+    "data": {
+      "productOriginalPrice": 3350,
+      "productPrice": 3350,
+      "originalPrice": 3350,
+      "discount": 0,
+      "price": 3350,
+      "productList": [
+        {"productCode": "9900005456", "productName": "麦辣鸡腿汉堡三件套", "quantity": 1, "originalSubtotal": 3350, "subtotal": 3350}
+      ],
+      "takeWayList": [
+        {"code": "eat-in", "title": "堂食", "subtitle": "店内用餐"},
+        {"code": "locker-out", "title": "外带", "subtitle": "店外取餐柜"}
+      ]
+    }
+  }
+}

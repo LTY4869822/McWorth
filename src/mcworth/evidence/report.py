@@ -1,12 +1,14 @@
-"""价格证据与结果卡（方案 12 节）。
+"""价格证据与结果卡（方案 12 节；2026-10-10 优化方案 A7 修订）。
 
 四种数字分别记账，不混淆：
-- 已核价同餐盘差额：基准总额 − 优化总额（餐盘完全一致才有资格叫“省”）
+- 已核价同餐盘差额：基准总额 − 优化总额（餐盘完全一致才有资格叫"省"）
 - 方案差额：不同餐盘/履约的总额差
 - 实际现金支出：官方确认支付的订单金额
 - 已核价方案累计差额：多次配餐同口径之和
 
-没有基准不报“为你省了多少”；报价不可用不冒充实付。
+基准措辞（A7）：用户只描述餐品时没有提供原买法——
+系统构造的全单品直购只能叫"对照基准（单品分别购买）"，
+不能叫"您的原购买计划"；没有有效基准时不显示任何"省了多少"。
 """
 
 from __future__ import annotations
@@ -14,8 +16,13 @@ from __future__ import annotations
 from typing import Optional
 
 from ..domain.money import fen_to_yuan
-from ..domain.types import PathSolution, VerifiedQuote
+from ..domain.types import PathSolution
 from ..solver.exact_plate import SolveResult, SolveStatus
+
+_BASELINE_LABELS = {
+    "user_provided": "与您的原购买方案相比",
+    "constructed_singles": "与单品分别购买相比",
+}
 
 
 def same_plate_delta_fen(baseline: PathSolution, candidate: PathSolution) -> Optional[int]:
@@ -31,11 +38,14 @@ def render_result_card(result: SolveResult) -> str:
     """渲染可复核结果卡（方案 12.3 的结构）。"""
     lines: list[str] = []
     intent = result.intent
-    keep = "、".join(
-        f"{req.name}×{req.quantity}" for req in intent.required
-    )
+    keep = "、".join(f"{req.name}×{req.quantity}" for req in intent.required)
     lines.append(f"保留：{keep}")
     lines.append(f"目标餐盘摘要：{result.target_plate_hash}")
+    if result.blockers:
+        lines.append("")
+        lines.append("未满足的前置条件：")
+        for b in result.blockers:
+            lines.append(f"  · {b}")
     lines.append("")
 
     for p in result.paths:
@@ -61,13 +71,14 @@ def render_result_card(result: SolveResult) -> str:
         lines.append(f"求解状态：{result.status.value}")
         if result.status == SolveStatus.SEARCH_EXHAUSTED and intent.budget_fen is not None:
             sp = result.same_plate_min_fen
-            lines.append(f"在本轮核价范围内，没有同时满足这些要求的方案（预算 ¥{fen_to_yuan(intent.budget_fen)}）。")
+            lines.append(
+                f"在本轮核价范围内，没有同时满足这些要求的方案（预算 ¥{fen_to_yuan(intent.budget_fen)}）。"
+            )
             if sp is not None and sp > intent.budget_fen:
                 lines.append(
                     f"保留当前餐盘的最低核价为 ¥{fen_to_yuan(sp)}；"
                     f"你可以把预算调整到 ¥{fen_to_yuan(sp)}，或允许更换餐品后重新查看。"
                 )
-            return "\n".join(lines)
         return "\n".join(lines)
 
     quote = main.quote
@@ -86,17 +97,18 @@ def render_result_card(result: SolveResult) -> str:
     if base is not None and base.quote is not None:
         delta = same_plate_delta_fen(base, main)
         lines.append("")
-        lines.append("── 与原购买计划比较 ────────────────")
-        lines.append(f"原计划（单品直购）核价：¥{fen_to_yuan(base.quote.total_fen)}")
+        header = _BASELINE_LABELS.get(result.baseline_origin or "", "对照基准")
+        lines.append(f"── {header} ────────────────")
+        lines.append(f"对照基准（单品分别购买）核价：¥{fen_to_yuan(base.quote.total_fen)}")
         if delta is not None and delta > 0:
-            lines.append(f"与原购买组合相比：低 ¥{fen_to_yuan(delta)}（相同餐盘差额）")
+            lines.append(f"与单品分别购买相比：低 ¥{fen_to_yuan(delta)}（相同餐盘差额）")
         elif delta is not None:
-            lines.append("与原购买组合相比：没有更便宜的相同餐盘买法。")
+            lines.append("与单品分别购买相比：没有更便宜的相同餐盘买法。")
         else:
             diff = base.quote.total_fen - quote.total_fen
             mark = "低" if diff > 0 else ("高" if diff < 0 else "持平")
             lines.append(
-                f"与原购买组合相比：{mark} ¥{fen_to_yuan(abs(diff))}"
+                f"与单品分别购买相比：{mark} ¥{fen_to_yuan(abs(diff))}"
                 "（注意：餐盘不完全一致，这是方案差额，不是无代价节省）"
             )
 
@@ -107,5 +119,8 @@ def render_result_card(result: SolveResult) -> str:
         lines.append(f"核价时间：{quote.evidence.captured_at}")
     if quote.evidence.trace_id:
         lines.append(f"traceId：{quote.evidence.trace_id}")
-    lines.append(f"搜索说明：已比较 {len(result.paths)} 个购买组合（其中 {len(result.quoted_eligible)} 个经官方核价）")
+    lines.append(
+        f"搜索说明：已比较 {len(result.paths)} 个购买组合"
+        f"（其中 {len(result.quoted_eligible)} 个经官方核价且合格）"
+    )
     return "\n".join(lines)

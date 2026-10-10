@@ -1,9 +1,9 @@
 ---
 name: mcworth
-description: 根据用户想吃的餐品、份量和预算，比较购买组合，使用麦当劳 MCP 核价并在授权范围内协助下单。
+description: 根据用户想吃的餐品、份量和预算，比较购买组合，使用麦当劳 MCP 核价并给出可复核的购买建议。
 description_zh: 保留想吃的餐品，计算更省的买法，也可按预算配餐。
 description_en: Plan a satisfying meal within budget and compare verified purchase options using McDonald's MCP.
-version: 0.1.0
+version: 0.2.0
 author: McWorth contributors
 ---
 
@@ -34,7 +34,7 @@ author: McWorth contributors
 
 - **固定餐盘**：用户已说清要吃什么（"我想吃 A 堡和中薯"）→ 保持餐盘不变，只换购买组合。
 - **预算配餐**：用户只给了预算和大致偏好 → 尚未实现，如实告知并退回固定餐盘模式。
-- **方案变更**：用户在已有结果上修改 → 递增版本号，旧结果不得覆盖新版本。
+- **方案变更**：用户在已有结果上修改 → 递增 `revision`，旧版本报价不得进入新版本推荐。
 
 ### 2. 追问规则
 
@@ -49,16 +49,29 @@ author: McWorth contributors
 
 **不要重复询问用户已经回答过的信息。**
 
-### 3. 只读链路
+### 3. 只读链路（宿主编排协议）
 
-按顺序调用宿主的麦当劳 MCP 工具，把结构化响应交给本技能的脚本处理：
+用 `mcworth` 的三个只读命令完成一次完整求解，各命令间通过 JSON 文件交接，**全程不发起网络调用**：
 
-1. `query-meals` → 读取菜单快照
-2. `query-meal-detail` → 读取套餐轮次结构（每一轮的可选项与差价）
-3. 本地构造候选购买组合：全单品直购（**公平基准**）+ 套餐覆盖方案
-4. `calculate-price` → 对候选逐个整单核价
+```text
+① mcworth plan --intent intent.json --menu menu.json --combos combos.json -o plan.json
+   输入：用户意图 + 官方工具响应（query-meals / query-meal-detail 的原始 JSON）
+   输出：候选购买组合列表 + quote_requests（每条含 cart_hash 与官方 official_payload）
 
-**关键**：报价以 `cart_hash` 与候选对账。核价失败或限流时，该候选保持"未核价"状态，**不得**掉回本地估算充当报价。
+② 宿主按 quote_requests 调用麦当劳 MCP 的 calculate-price，收集响应
+
+③ mcworth ingest-quotes --plan plan.json --responses responses.json -o quotes.json
+   输入：plan.json + 官方核价响应
+   输出：通过上下文与金额校验的报价记录（0 问题才继续）
+
+④ mcworth report --intent intent.json --menu menu.json --combos combos.json --quotes quotes.json
+   输出：可复核结果卡（分类、措辞、对照基准、traceId）
+```
+
+**关键规则**：
+- 报价以 `cart_hash` 与候选对账，对不上的响应会被拒绝并计入问题数。
+- `source_mode` 必须如实标注：`live`（本次实时核价）/ `historical_replay`（官方快照回放）/ `synthetic`（合成演示）。只有 `live` 可用于对用户的正式推荐；快照回放只用于演示与复现。
+- 任何候选缺少官方核价时保持"未核价"状态，**不得**掉回本地估算充当报价。
 
 ### 4. 分类与展示
 
@@ -74,9 +87,15 @@ author: McWorth contributors
 
 ### 5. 措辞规则
 
+对照基准的来源必须如实交代（`baseline_origin`）：
+
+- 用户提供了原购物车 → 才可以说"与您的原计划相比"。
+- 没有原购物车、由系统构造的全单品直购 → 只能说"**与单品分别购买相比**"。
+- 两者都没有 → 不展示任何比较，只报各方案核价。
+
 | 情形 | 正确说法 | 错误说法 |
 |---|---|---|
-| 餐盘完全一致，金额更低 | "与原购买组合相比低 ¥X（相同餐盘差额）" | — |
+| 餐盘完全一致，金额更低 | "比单品分别购买低 ¥X（相同餐盘）" | — |
 | 餐盘有变化 | "低 ¥X（方案差额，不是无代价节省）" | "为你省了 ¥X" |
 | 未核价 | "该方案尚未通过官方核验" | 给出任何金额 |
 | 搜索完毕无解 | "在本轮核价范围内没有同时满足这些要求的方案" | "绝对买不到" |
@@ -94,6 +113,7 @@ author: McWorth contributors
 - **不自动下单**：`create-order` 等任何下单操作涉及真实资金与账户权益，本版本保持只读。
 - **不做**：`auto-bind-coupons` —— 它会领取符合条件的全部优惠，不是精确领券。
 - **不用健康评分**：不使用未经验证的健康总分，不把热量高解释为更管饱。
+- **不冒充用户意图**：没有用户明说，不得假设"原计划"；系统构造的基准必须注明"单品分别购买"。
 
 ## 参考文件
 
@@ -101,7 +121,6 @@ author: McWorth contributors
 
 - `references/tool-contracts.md` — 官方工具的输入输出契约与实测结论
 - `references/pricing-rules.md` — 四种金额口径的记账规则
-- `scripts/` — 确定性逻辑（解析、求解、渲染）
 
 ## 来源声明
 
