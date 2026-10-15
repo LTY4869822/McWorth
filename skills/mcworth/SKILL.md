@@ -3,7 +3,7 @@ name: mcworth
 description: 根据用户想吃的餐品、份量和预算，比较购买组合，使用麦当劳 MCP 核价并给出可复核的购买建议。
 description_zh: 保留想吃的餐品，计算更省的买法（固定餐盘模式；预算配餐尚未实现）。
 description_en: Plan a satisfying meal within budget and compare verified purchase options using McDonald's MCP.
-version: 0.2.1
+version: 0.2.2
 author: McWorth contributors
 ---
 
@@ -36,6 +36,21 @@ author: McWorth contributors
 - **预算配餐**：用户只给了预算和大致偏好 → 尚未实现，如实告知并退回固定餐盘模式。
 - **方案变更**：用户在已有结果上修改 → 递增 `revision`，旧版本报价不得进入新版本推荐。
 
+#### intent.json 关键字段（写错这些，授权语义就错了）
+
+| 字段 | 取值 | 说明 |
+|---|---|---|
+| `mode` | `"exact_plate"` | 本版本只支持固定餐盘；`"budget"` 尚未实现 |
+| `budget_fen` | 整数分或 `null` | **支出上限**，不是必须花光的目标；`null` 表示不比价上限 |
+| `extras_policy` | `"disallow"`（默认）/ `"allow"` | 是否接受"餐盘有增量"的方案。注意取值是 `disallow`，**不是 `deny`** |
+| `allowed_extras` | `[{"code": "3050", "max_quantity": 1}]` | 细化授权：只允许这些增量且不超数量。留空且 `extras_policy=allow` 表示全量允许 |
+| `substitutions_allowed` | `["薯条"]` | 允许被替换掉的餐品名。**该餐品的 `locked` 必须为 false**，否则视为授权自相矛盾（校验会阻塞） |
+| `required[].locked` | `true` / `false` | `true` = 用户锁定此项，任何情况下不得替换 |
+| `preference` | `"save_money"`（默认）/ `"strict_plate"` / `"upgrade"` | 合格候选内部的排序依据 |
+
+⚠️ 默认姿态是**保守**：不接受加量、不允许替换。只有用户明确表达（"可以多一杯饮料""换成 XX 也行"）才能放宽，
+且放宽后要在结果卡里如实标注这是"方案差额"而非"无代价节省"。
+
 ### 2. 追问规则
 
 只追问**影响可行性或执行正确性**的缺失项：
@@ -50,6 +65,26 @@ author: McWorth contributors
 **不要重复询问用户已经回答过的信息。**
 
 ### 3. 只读链路（宿主编排协议）
+
+#### 3.0 先决定"抓哪些套餐"——这一步直接决定结论质量
+
+`plan --combos` 的套餐清单由宿主提供。**抓漏了，"无解"和"最低 ¥X"的结论就可能是错的**：
+同一诉求（35 元内、双层吉士汉堡+薯条），只抓名字含目标餐品的套餐会得到"无解，最低 ¥37.00"，
+把"随心配"类商品也纳入后，真实答案是"¥28.90"（用 1+1 组合把汉堡搭进去）。按此清单抓：
+
+| 优先级 | 抓什么 | 为什么 |
+|---|---|---|
+| 1 | 用户想吃的单品本身 | 构成"单品分别购买"对照基准，必须有 |
+| 2 | 名字含目标餐品名的套餐 / 三件套 / 四件套 | 最常见的"换套餐更省"来源 |
+| 3 | **随心配 / 1+1 / 加价购 / 超值组合类商品** | 名字**不含**目标餐品名，最易漏；实测在多个门店都是最省路径 |
+| 4 | 目标餐品的同类替代品（可选，需用户授权替换） | 用户允许换餐品时才抓 |
+
+- **不要抓**与目标餐品无关的套餐：既污染结果卡，也浪费核价次数（每次 `calculate-price` 都是一次真实请求）。
+- 候选套餐多时按"与目标餐品的相关度 → 菜单标价"排序后截断，并告知用户本轮覆盖了哪些套餐。
+- 抓到的每个套餐都要用 `query-meal-detail` 取完整轮次结构（`rounds`），
+  **`round.id` 是数字（1、2…），转 payload 时按字符串写入 `round` 字段**——宿主不要自己猜编号。
+
+#### 3.1 三个只读命令
 
 用 `mcworth` 的三个只读命令完成一次完整求解，各命令间通过 JSON 文件交接，**全程不发起网络调用**：
 
@@ -66,9 +101,9 @@ author: McWorth contributors
    responses.json 每条记录的最小结构：
    {
      "request_id":       "qr-0",                        // 抄自 plan 的对应请求
-     "session_id":       "...",                         // 抄自 plan 的 intent
-     "intent_revision":  1,                             // 抄自 plan 的 intent
-     "context_key":      "store=...;order_type=...;be_type=...",  // 抄自 plan 的 context
+     "session_id":       "...",                         // 抄自 plan.intent.session_id
+     "intent_revision":  1,                             // 抄自 plan.intent.revision
+     "context_key":      "store=...;order_type=...;be_type=...",  // 抄自 plan.context.context_key
      "cart_hash":        "cart:sha256:...",             // 抄自 plan 的对应请求
      "source_mode":      "live",                        // live | historical_replay | synthetic
      "captured_at":      "2026-10-10T13:00:00+08:00",   // 实际调用时间
@@ -76,12 +111,22 @@ author: McWorth contributors
      "response":         { ...官方 calculate-price 响应原文... }
    }
    身份四元组 + cart_hash 必须由宿主从 plan 原样抄录，不得凭记忆重写。
+   ⚠️ context_key **不在** quote_requests 里：它在 plan 顶层 `context.context_key`
+   （quote_requests 的每条含 request_id / session_id / intent_revision / cart_hash / official_payload）。
+   ⚠️ response 必须是**官方原始 JSON**，不要改写、不要"顺手修正"其中的金额字段——
+   ingest-quotes 会校验金额自洽（见下），改写过的金额会被拒绝。
 
 ③ mcworth ingest-quotes --plan plan.json --responses responses.json -o quotes.json
    输入：plan.json + responses.json
-   校验：身份四元组与 cart_hash 必须匹配；响应商品清单与请求对账；
-        不符的响应被拒绝并计入 errors（宁可少推荐，不错账）。
-   输出：通过校验的报价记录（已绑定 session_id / intent_revision）。
+   校验（任一不过即拒绝该条并计入 errors，宁可少推荐，不错账）：
+        · 身份四元组与 cart_hash 必须匹配；
+        · 响应商品清单与请求对账；
+        · **金额自洽**：productPrice = Σ items.subtotal，
+          且 total = productPrice − discount + delivery + packing + tableware
+          （缺失组件视为"未知"而非 0，此时只做单侧可证伪的下限/上限检查）。
+   输出：quotes.json，顶层为 {schema_version, context_key, records, errors, notes}
+        ——通过校验的报价在 `records`（不是 quotes），被拒原因在 `errors`。
+        每条记录已绑定 session_id / intent_revision。
 
 ④ mcworth report --intent intent.json --menu menu.json [--combos combos.json] --quotes quotes.json
    校验：报价与会话/版本不符 → 不适用；live 报价超过 6 小时新鲜度阈值 →
@@ -104,7 +149,9 @@ author: McWorth contributors
 | `extras` | 目标都在，另有增量（如套餐强制送的饮料） | **除非用户明确授权，否则不推荐** |
 | `substitution` | 换掉了目标餐品 | 除非用户明确允许更换该项 |
 
-最多展示**三个**有意义的选择。每个都要说清：保留什么、变了什么、官方核价多少、核价时间与 traceId。
+最多展示**三个**有意义的选择（v0.2.2 起由工具自动收敛：按"同餐盘 → 增量 → 替换"分组，
+组内合并实质重复项、按价格升序取前若干，主推荐必在展示之列；被省略的数量会如实写在卡片上）。
+每个都要说清：保留什么、变了什么、官方核价多少、核价时间与 traceId。
 
 ### 5. 措辞规则
 

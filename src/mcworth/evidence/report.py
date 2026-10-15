@@ -51,6 +51,61 @@ def same_plate_delta_fen(baseline: PathSolution, candidate: PathSolution) -> Opt
     return baseline.quote.total_fen - candidate.quote.total_fen
 
 
+# v0.2.2（A8）：展示收敛。SKILL.md 第 4 节要求"最多展示三个有意义的选择"，
+# 而实测中同一诉求一次列出了 7–9 行（含 ¥80 的明显无关组合、以及多行
+# 实质完全相同的重复项）。这里按"同餐盘 → 增量 → 替换"分组，
+# 组内先按复合轮廓去重、再按价格升序取前若干，主推荐必在展示之列。
+DISPLAY_LIMIT = 3
+
+_CLASS_ORDER = {"same_plate": 0, "extras": 1, "substitution": 2}
+
+_CLASS_TAG = {
+    "same_plate": "相同餐盘",
+    "extras": "餐盘有增量",
+    "substitution": "更换了餐品",
+}
+
+
+def _substance_key(p: PathSolution):
+    """复合轮廓：同分类 + 同增量/缺失 + 同金额，视为实质重复的同一选择。"""
+    return (
+        p.classification,
+        tuple(sorted((a.code, a.quantity) for a in p.extra_atoms)),
+        tuple(sorted(p.missing_atoms)),
+        p.quote.total_fen if p.quote else None,
+    )
+
+
+def select_display_paths(
+    result: SolveResult, limit: int = DISPLAY_LIMIT
+) -> tuple[list[PathSolution], int]:
+    """选出要展示的已核价组合，返回 (展示列表, 被省略的数量)。
+
+    省略不等于隐瞒：调用方必须把省略数量如实告知用户。
+    """
+    quoted = [p for p in result.paths if p.quote is not None]
+    seen: set = set()
+    ordered: list[PathSolution] = []
+    for p in sorted(
+        quoted, key=lambda p: (_CLASS_ORDER.get(p.classification, 9), p.quote.total_fen)
+    ):
+        key = _substance_key(p)
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered.append(p)
+
+    chosen = ordered[:limit]
+    main = result.main
+    if main is not None and main.quote is not None and main not in chosen:
+        # 主推荐必在展示之列：替换掉当前最贵的一条
+        chosen = chosen[: max(limit - 1, 0)] + [main]
+        chosen.sort(key=lambda p: (_CLASS_ORDER.get(p.classification, 9), p.quote.total_fen))
+    # 省略数如实统计：既包含实质重复项，也包含同类更贵项
+    hidden = len(quoted) - len(chosen)
+    return chosen, hidden
+
+
 def render_result_card(result: SolveResult, run_mode: str = "live") -> str:
     """渲染可复核结果卡（方案 12.3 的结构）。
 
@@ -74,14 +129,11 @@ def render_result_card(result: SolveResult, run_mode: str = "live") -> str:
             lines.append(f"  · {b}")
     lines.append("")
 
-    for p in result.paths:
+    shown, hidden = select_display_paths(result)
+    for p in shown:
         if p.quote is None:
             continue
-        tag = {
-            "same_plate": "相同餐盘",
-            "extras": "餐盘有增量",
-            "substitution": "更换了餐品",
-        }[p.classification]
+        tag = _CLASS_TAG[p.classification]
         detail = f"{p.label or p.combo_code or '路径'} · {tag} · {price_label} ¥{fen_to_yuan(p.quote.total_fen)}"
         if p.classification == "extras" and p.extra_atoms:
             names = "、".join(f"{a.name}×{a.quantity}" for a in p.extra_atoms)
@@ -89,6 +141,11 @@ def render_result_card(result: SolveResult, run_mode: str = "live") -> str:
         if p.classification == "substitution" and p.missing_atoms:
             detail += f"（缺少：{'、'.join(p.missing_atoms)}）"
         lines.append(detail)
+    if hidden > 0:
+        lines.append(
+            f"（另有 {hidden} 个已官方核价组合未逐条展示：含实质重复项与同类更贵项，"
+            "全部候选与核价结果可在 plan.json / quotes.json 中复核）"
+        )
 
     lines.append("")
 

@@ -33,7 +33,11 @@ from . import __version__
 from .adapters.combo import parse_combo_detail
 from .adapters.menu import parse_menu, snapshot_evidence
 from .adapters.official import to_official_payload
-from .adapters.pricing import parse_quote, snapshot_quote_evidence
+from .adapters.pricing import (
+    parse_quote,
+    quote_consistency_problems,
+    snapshot_quote_evidence,
+)
 from .domain.money import fen_to_yuan
 from .domain.types import (
     AtomRequirement,
@@ -257,6 +261,16 @@ def cmd_ingest_quotes(args: argparse.Namespace) -> int:
         if resp_items and want_items and resp_items != want_items:
             errors.append(
                 f"响应 #{idx} 的商品清单与请求不符（响应 {resp_items} ≠ 请求 {want_items}），已拒绝"
+            )
+            continue
+        # A6（v0.2.2）：金额自洽校验——身份匹配只说明"属于本任务"，
+        # 不说明"这条报价内部自洽"。总额/商品价/明细/费用互相矛盾时，
+        # 这个金额不得进入推荐（实测：把 price 改成 1 分曾能被当主推荐 ¥0.01）。
+        inconsistency = quote_consistency_problems(quote)
+        if inconsistency:
+            errors.append(
+                f"响应 #{idx} 金额自相矛盾（{'；'.join(inconsistency)}），已拒绝——"
+                "进入推荐的金额必须能由官方响应字段互相解释"
             )
             continue
         quote.context_key = ctx

@@ -72,3 +72,55 @@ def snapshot_quote_evidence(trace_id: str, captured_at: str) -> EvidenceRef:
         captured_at=captured_at,
         trace_id=trace_id,
     )
+
+
+def quote_consistency_problems(quote: VerifiedQuote) -> list[str]:
+    """A6（v0.2.2）：报价金额自洽校验——判断题从"这条报价属于谁"升级为"这条报价是否自相矛盾"。
+
+    身份四元组只回答"这条报价属于哪个请求"，不回答"这条报价自己站不站得住"。
+    官方响应内部的金额字段必须能互相解释：
+
+        productPrice = Σ items.subtotal
+        total        = productPrice - discount + delivery + packing + tableware
+
+    缺失组件（None）表示**未知**，绝不当作 0，因此组件不全时只做单侧可证伪的检查：
+    费用只会加、优惠只会减，所以「商品价 - 已知优惠」是实付的**下限**；
+    只有全部组件齐备时才要求与公式**完全相等**。
+    """
+    problems: list[str] = []
+    product_price = quote.product_price_fen
+
+    # ① 明细合计必须等于商品价（两者都在时才可判）
+    if product_price is not None and quote.items:
+        subtotals = [i.subtotal_fen for i in quote.items]
+        if all(s is not None for s in subtotals):
+            item_sum = sum(s for s in subtotals if s is not None)
+            if item_sum != product_price:
+                problems.append(f"明细合计 {item_sum} 分与商品价 {product_price} 分不一致")
+
+    # ② 实付必须落在「商品价 - 优惠 + 费用」可解释的区间内
+    if product_price is not None:
+        discount = quote.discount_fen
+        fees = (quote.delivery_fen, quote.packing_fen, quote.tableware_fen)
+        fees_all_known = all(f is not None for f in fees)
+        fee_sum = sum(f for f in fees if f is not None)
+
+        if discount is not None:
+            floor = product_price - discount
+            if quote.total_fen < floor:
+                problems.append(
+                    f"实付 {quote.total_fen} 分低于「商品价 {product_price} - 优惠 {discount}」"
+                    f"可得的下限 {floor} 分"
+                )
+            if fees_all_known and quote.total_fen != floor + fee_sum:
+                problems.append(
+                    f"实付 {quote.total_fen} 分与「商品价 {product_price} - 优惠 {discount} "
+                    f"+ 费用 {fee_sum}」= {floor + fee_sum} 分不符"
+                )
+        elif fees_all_known and quote.total_fen > product_price + fee_sum:
+            problems.append(
+                f"实付 {quote.total_fen} 分高于「商品价 {product_price} + 费用 {fee_sum}」"
+                f"的上限 {product_price + fee_sum} 分"
+            )
+
+    return problems

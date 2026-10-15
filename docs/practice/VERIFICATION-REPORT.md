@@ -60,6 +60,15 @@ SKILL.md 第 4 节要求最多展示三个有意义选项，实卡一次列了 7
 - 主要门槛不在安装，而在**宿主编排**：三个命令 + 两个文件格式 + 四元组抄录，写对了很稳，
   但初次接入容易在 `context_key` 取值、套餐发现范围上栽跟头（D2/D4）。
 
+## 四之二、修复状态（v0.2.2）
+
+| 发现 | 状态 | 落点 |
+|---|---|---|
+| D1 金额缺少自洽校验 | ✅ 已修 | `adapters/pricing.py: quote_consistency_problems()` + `ingest-quotes` 拒绝链；回归组 `tests/regressions/test_v022_amount_consistency.py`（7 项）。用本目录的真实篡改证据复测：¥0.01 那条已被拒绝，主推荐回到 ¥28.90 |
+| D2 套餐发现无指引 | ✅ 已补 | SKILL.md 新增 §3.0「先决定抓哪些套餐」，含优先级清单与实战反例 |
+| D3 展示未收敛 | ✅ 已修 | `evidence/report.py: select_display_paths()`：分组去重 + 上限 3 条 + 主推荐必在列 + 省略数如实告知；回归组 `test_v022_display_convergence.py`（3 项） |
+| D4 文档缺口 | ✅ 已补 | SKILL.md 新增 intent 关键字段表；补齐 context_key 取值位置、ingest 输出键 `records`/`errors`、金额自洽规则、round.id 编号说明 |
+
 ## 五、结论
 
 **这个东西是真有用的**：它给出的价格全部可复核，身份校验能挡住错会话/错版本的报价，
