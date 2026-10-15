@@ -1,0 +1,834 @@
+{
+  "schema_version": "1",
+  "generated_by": "mcworth 0.2.1",
+  "intent": {
+    "schema_version": "1.1",
+    "session_id": "practice-20261016",
+    "revision": 1,
+    "mode": "exact_plate",
+    "budget_fen": 3500,
+    "required": [
+      {
+        "atom_code": "1440",
+        "name": "麦辣鸡腿汉堡",
+        "quantity": 1,
+        "locked": true,
+        "spec": []
+      },
+      {
+        "atom_code": "4810",
+        "name": "薯条",
+        "quantity": 1,
+        "locked": true,
+        "spec": []
+      }
+    ],
+    "extras_policy": "allow",
+    "preference": "save_money",
+    "allowed_extras": [],
+    "substitutions_allowed": [],
+    "unresolved": [],
+    "source": "user"
+  },
+  "context": {
+    "store_code": "1421057",
+    "order_type": 1,
+    "be_type": 1,
+    "context_key": "store=1421057;order_type=1;be_type=1"
+  },
+  "blockers": [],
+  "target_plate_hash": "plate:sha256:a38702e712cc42b1",
+  "candidates": [
+    {
+      "label": "baseline",
+      "cart_hash": "cart:sha256:edc58d0078dfe762",
+      "classification": "same_plate",
+      "extra_atoms": [],
+      "missing_atoms": [],
+      "reference_total_fen": 3650,
+      "offer": [
+        {
+          "product_code": "1440",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        },
+        {
+          "product_code": "4810",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:853ced8880b16a2d",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 3350,
+      "offer": [
+        {
+          "product_code": "9900005456",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "1440",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:bfad2b57b7451743",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        },
+        {
+          "code": "4810",
+          "name": "薯条",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 4750,
+      "offer": [
+        {
+          "product_code": "9900005456",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "1440",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        },
+        {
+          "product_code": "4810",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:9ec01cbb0b58fdcf",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "1440",
+          "name": "麦辣鸡腿汉堡",
+          "quantity": 1
+        },
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 5600,
+      "offer": [
+        {
+          "product_code": "9900005456",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "1440",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        },
+        {
+          "product_code": "1440",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:16634a844359a4ad",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        },
+        {
+          "code": "515106",
+          "name": "麦乐鸡4块",
+          "quantity": 1
+        },
+        {
+          "code": "521952",
+          "name": "龙焰鸡腿堡",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 5150,
+      "offer": [
+        {
+          "product_code": "9900016309",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "521952",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "515106",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "4",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        },
+        {
+          "product_code": "1440",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:ebd463f724397464",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        },
+        {
+          "code": "515106",
+          "name": "麦乐鸡4块",
+          "quantity": 1
+        },
+        {
+          "code": "521952",
+          "name": "龙焰鸡腿堡",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 5150,
+      "offer": [
+        {
+          "product_code": "9900016311",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "521952",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "515106",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "4",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        },
+        {
+          "product_code": "1440",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    },
+    {
+      "label": "combo-default",
+      "cart_hash": "cart:sha256:d8c5b71ee75eecce",
+      "classification": "extras",
+      "extra_atoms": [
+        {
+          "code": "3050",
+          "name": "可乐中杯",
+          "quantity": 1
+        },
+        {
+          "code": "515106",
+          "name": "麦乐鸡4块",
+          "quantity": 1
+        },
+        {
+          "code": "521953",
+          "name": "龙焰芝士棒鸡腿堡",
+          "quantity": 1
+        }
+      ],
+      "missing_atoms": [],
+      "reference_total_fen": 5450,
+      "offer": [
+        {
+          "product_code": "9900016310",
+          "quantity": 1,
+          "rounds": [
+            {
+              "round": "1",
+              "items": [
+                {
+                  "code": "521953",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "2",
+              "items": [
+                {
+                  "code": "4810",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "3",
+              "items": [
+                {
+                  "code": "515106",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            },
+            {
+              "round": "4",
+              "items": [
+                {
+                  "code": "3050",
+                  "quantity": 1,
+                  "modifications": []
+                }
+              ]
+            }
+          ],
+          "modifications": []
+        },
+        {
+          "product_code": "1440",
+          "quantity": 1,
+          "rounds": [],
+          "modifications": []
+        }
+      ]
+    }
+  ],
+  "quote_requests": [
+    {
+      "request_id": "qr-0",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:edc58d0078dfe762",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "1440",
+            "quantity": 1
+          },
+          {
+            "productCode": "4810",
+            "quantity": 1
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-1",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:853ced8880b16a2d",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "9900005456",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "1440",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-2",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:bfad2b57b7451743",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "4810",
+            "quantity": 1
+          },
+          {
+            "productCode": "9900005456",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "1440",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-3",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:9ec01cbb0b58fdcf",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "1440",
+            "quantity": 1
+          },
+          {
+            "productCode": "9900005456",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "1440",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-4",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:16634a844359a4ad",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "1440",
+            "quantity": 1
+          },
+          {
+            "productCode": "9900016309",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "521952",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "515106",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "4",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-5",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:ebd463f724397464",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "1440",
+            "quantity": 1
+          },
+          {
+            "productCode": "9900016311",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "521952",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "515106",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "4",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "request_id": "qr-6",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "cart_hash": "cart:sha256:d8c5b71ee75eecce",
+      "official_payload": {
+        "storeCode": "1421057",
+        "orderType": 1,
+        "beType": 1,
+        "items": [
+          {
+            "productCode": "1440",
+            "quantity": 1
+          },
+          {
+            "productCode": "9900016310",
+            "quantity": 1,
+            "roundList": [
+              {
+                "round": "1",
+                "comboItemList": [
+                  {
+                    "code": "521953",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "2",
+                "comboItemList": [
+                  {
+                    "code": "4810",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "3",
+                "comboItemList": [
+                  {
+                    "code": "515106",
+                    "quantity": 1
+                  }
+                ]
+              },
+              {
+                "round": "4",
+                "comboItemList": [
+                  {
+                    "code": "3050",
+                    "quantity": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "official_payload 直接作为官方 calculate-price 的请求参数使用。",
+    "reference_total_fen 是本地参考价，仅用于排序候选，不作为报价。",
+    "只对分类合格与基准路径请求核价；增量路径需 extras_policy=allow 才会入单。"
+  ]
+}

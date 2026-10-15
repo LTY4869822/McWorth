@@ -1,0 +1,52 @@
+{
+  "status": "FEASIBLE_VERIFIED",
+  "source_mode": "live",
+  "freshness_hours": 6,
+  "blockers": [],
+  "rejected_quotes": [],
+  "main": {
+    "label": "combo-default",
+    "cart_hash": "cart:sha256:15fdb3f31956746d",
+    "classification": "extras",
+    "total_fen": 2890,
+    "offer": [
+      {
+        "product_code": "9900015188",
+        "quantity": 1,
+        "rounds": [
+          {
+            "round": "1",
+            "items": [
+              {
+                "code": "1120",
+                "quantity": 1,
+                "modifications": []
+              }
+            ]
+          },
+          {
+            "round": "2",
+            "items": [
+              {
+                "code": "515281",
+                "quantity": 1,
+                "modifications": []
+              }
+            ]
+          }
+        ],
+        "modifications": []
+      },
+      {
+        "product_code": "4810",
+        "quantity": 1,
+        "rounds": [],
+        "modifications": []
+      }
+    ]
+  },
+  "baseline_total_fen": 3700,
+  "baseline_origin": "constructed_singles",
+  "paths_compared": 9,
+  "paths_quoted_eligible": 9
+}

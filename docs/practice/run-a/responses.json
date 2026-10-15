@@ -1,0 +1,54 @@
+[
+  {
+    "request_id": "qr-0",
+    "session_id": "practice-20261016",
+    "intent_revision": 1,
+    "context_key": "store=1421057;order_type=1;be_type=1",
+    "cart_hash": "cart:sha256:8b876923e26e29b8",
+    "source_mode": "live",
+    "captured_at": "2026-10-15T16:33:45.981446+00:00",
+    "trace_id": "2a46890b924bca768c1d6198ee1c174f",
+    "response": {
+      "success": true,
+      "code": 200,
+      "message": "请求成功",
+      "datetime": "2026-10-16 00:33:48",
+      "traceId": "2a46890b924bca768c1d6198ee1c174f",
+      "data": {
+        "productOriginalPrice": 3700,
+        "productPrice": 3700,
+        "originalPrice": 3700,
+        "discount": 0,
+        "price": 3700,
+        "productList": [
+          {
+            "productCode": "1120",
+            "productName": "双层吉士汉堡",
+            "quantity": 1,
+            "originalSubtotal": 2300,
+            "subtotal": 2300
+          },
+          {
+            "productCode": "4810",
+            "productName": "中薯条",
+            "quantity": 1,
+            "originalSubtotal": 1400,
+            "subtotal": 1400
+          }
+        ],
+        "takeWayList": [
+          {
+            "code": "eat-in",
+            "title": "堂食",
+            "subtitle": "店内用餐"
+          },
+          {
+            "code": "locker-in",
+            "title": "外带",
+            "subtitle": "店内取餐柜"
+          }
+        ]
+      }
+    }
+  }
+]

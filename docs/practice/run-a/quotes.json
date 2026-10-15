@@ -1,0 +1,68 @@
+{
+  "schema_version": "2",
+  "context_key": "store=1421057;order_type=1;be_type=1",
+  "records": [
+    {
+      "request_id": "qr-0",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:8b876923e26e29b8",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:33:45.981446+00:00",
+      "source_mode": "live",
+      "total_fen": 3700,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:33:45.981446+00:00",
+        "trace_id": "2a46890b924bca768c1d6198ee1c174f",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 3700,
+        "product_price_fen": 3700,
+        "original_total_fen": 3700,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1120",
+            "product_name": "双层吉士汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2300,
+            "subtotal_fen": 2300
+          },
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:33:45.981446+00:00",
+          "trace_id": "2a46890b924bca768c1d6198ee1c174f",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "live 报价仅代表采集时刻的官方核价，下单前请以最终订单确认为准。",
+    "缺失的费用组件为 null（未知），不代表为 0。",
+    "records 已绑定 session_id / intent_revision；需求变更后旧报价不会自动适用于新推荐。"
+  ]
+}

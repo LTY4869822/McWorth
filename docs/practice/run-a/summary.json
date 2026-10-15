@@ -1,0 +1,12 @@
+{
+  "status": "SEARCH_EXHAUSTED",
+  "source_mode": "live",
+  "freshness_hours": 6,
+  "blockers": [],
+  "rejected_quotes": [],
+  "main": null,
+  "baseline_total_fen": 3700,
+  "baseline_origin": "constructed_singles",
+  "paths_compared": 7,
+  "paths_quoted_eligible": 1
+}

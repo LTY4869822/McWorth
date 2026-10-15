@@ -1,0 +1,407 @@
+{
+  "schema_version": "2",
+  "context_key": "store=1421057;order_type=1;be_type=1",
+  "records": [
+    {
+      "request_id": "qr-2",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:8332453c2b2683d6",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:37.896895+00:00",
+      "source_mode": "live",
+      "total_fen": 1,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:37.896895+00:00",
+        "trace_id": "6b56ff11ac85e2fc2ef8ddd0ed5f32f8",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 1,
+        "product_price_fen": 4800,
+        "original_total_fen": 4800,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          },
+          {
+            "product_code": "9900005464",
+            "product_name": "双层吉士汉堡中套餐",
+            "quantity": 1,
+            "original_subtotal_fen": 3400,
+            "subtotal_fen": 3400
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:37.896895+00:00",
+          "trace_id": "6b56ff11ac85e2fc2ef8ddd0ed5f32f8",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-3",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:9fab3c34926a5372",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:38.552151+00:00",
+      "source_mode": "live",
+      "total_fen": 5700,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:38.552151+00:00",
+        "trace_id": "b58fbd0997d0a2a73a2ae1cc3bb56857",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 5700,
+        "product_price_fen": 5700,
+        "original_total_fen": 5700,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1120",
+            "product_name": "双层吉士汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2300,
+            "subtotal_fen": 2300
+          },
+          {
+            "product_code": "9900005464",
+            "product_name": "双层吉士汉堡中套餐",
+            "quantity": 1,
+            "original_subtotal_fen": 3400,
+            "subtotal_fen": 3400
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:38.552151+00:00",
+          "trace_id": "b58fbd0997d0a2a73a2ae1cc3bb56857",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-4",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:8846af2de369c43f",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:39.166227+00:00",
+      "source_mode": "live",
+      "total_fen": 5650,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:39.166227+00:00",
+        "trace_id": "98a6e4705ada62a27d2f6e54ab4f0407",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 5650,
+        "product_price_fen": 5650,
+        "original_total_fen": 5650,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1120",
+            "product_name": "双层吉士汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2300,
+            "subtotal_fen": 2300
+          },
+          {
+            "product_code": "9900005456",
+            "product_name": "麦辣鸡腿汉堡三件套",
+            "quantity": 1,
+            "original_subtotal_fen": 3350,
+            "subtotal_fen": 3350
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:39.166227+00:00",
+          "trace_id": "98a6e4705ada62a27d2f6e54ab4f0407",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-5",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:decc54ce4c18981d",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:39.713707+00:00",
+      "source_mode": "live",
+      "total_fen": 8000,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:39.713707+00:00",
+        "trace_id": "fb234454f271e7bbdb1bb60739145025",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 8000,
+        "product_price_fen": 8000,
+        "original_total_fen": 8000,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1120",
+            "product_name": "双层吉士汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2300,
+            "subtotal_fen": 2300
+          },
+          {
+            "product_code": "9900016309",
+            "product_name": "龙焰鸡腿堡四件套",
+            "quantity": 1,
+            "original_subtotal_fen": 5700,
+            "subtotal_fen": 5700
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:39.713707+00:00",
+          "trace_id": "fb234454f271e7bbdb1bb60739145025",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-6",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:36b59e87b437b16e",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:40.302633+00:00",
+      "source_mode": "live",
+      "total_fen": 8000,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:40.302633+00:00",
+        "trace_id": "eecebcbff964367001207c3d23e30e49",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 8000,
+        "product_price_fen": 8000,
+        "original_total_fen": 8000,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1120",
+            "product_name": "双层吉士汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2300,
+            "subtotal_fen": 2300
+          },
+          {
+            "product_code": "9900016311",
+            "product_name": "龙焰美味四件套",
+            "quantity": 1,
+            "original_subtotal_fen": 5700,
+            "subtotal_fen": 5700
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:40.302633+00:00",
+          "trace_id": "eecebcbff964367001207c3d23e30e49",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-7",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:15fdb3f31956746d",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:40.912889+00:00",
+      "source_mode": "live",
+      "total_fen": 2890,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:40.912889+00:00",
+        "trace_id": "74ecaef0d9c498e043673596417e746c",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 2890,
+        "product_price_fen": 2890,
+        "original_total_fen": 2890,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          },
+          {
+            "product_code": "9900015188",
+            "product_name": "精选超值随心配",
+            "quantity": 1,
+            "original_subtotal_fen": 1490,
+            "subtotal_fen": 1490
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:40.912889+00:00",
+          "trace_id": "74ecaef0d9c498e043673596417e746c",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-8",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:699ed91c6698ec8b",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:36:41.478262+00:00",
+      "source_mode": "live",
+      "total_fen": 2890,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:36:41.478262+00:00",
+        "trace_id": "ffc9fca5994e4630cf88a28ae07aa2af",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 2890,
+        "product_price_fen": 2890,
+        "original_total_fen": 2890,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          },
+          {
+            "product_code": "9900015187",
+            "product_name": "人气经典随心配",
+            "quantity": 1,
+            "original_subtotal_fen": 1490,
+            "subtotal_fen": 1490
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:36:41.478262+00:00",
+          "trace_id": "ffc9fca5994e4630cf88a28ae07aa2af",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    }
+  ],
+  "errors": [
+    "响应 #0 身份不符（session_id 与计划不一致），已拒绝——cart_hash 匹配不构成身份证明",
+    "响应 #1 身份不符（intent_revision 与计划不一致），已拒绝——cart_hash 匹配不构成身份证明"
+  ],
+  "notes": [
+    "live 报价仅代表采集时刻的官方核价，下单前请以最终订单确认为准。",
+    "缺失的费用组件为 null（未知），不代表为 0。",
+    "records 已绑定 session_id / intent_revision；需求变更后旧报价不会自动适用于新推荐。"
+  ]
+}

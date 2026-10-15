@@ -1,0 +1,397 @@
+{
+  "schema_version": "2",
+  "context_key": "store=1421057;order_type=1;be_type=1",
+  "records": [
+    {
+      "request_id": "qr-0",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:edc58d0078dfe762",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:33.056951+00:00",
+      "source_mode": "live",
+      "total_fen": 3650,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:33.056951+00:00",
+        "trace_id": "534808e654534bb6a3e1d83da267f293",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 3650,
+        "product_price_fen": 3650,
+        "original_total_fen": 3650,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1440",
+            "product_name": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2250,
+            "subtotal_fen": 2250
+          },
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:33.056951+00:00",
+          "trace_id": "534808e654534bb6a3e1d83da267f293",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-1",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:853ced8880b16a2d",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:33.598860+00:00",
+      "source_mode": "live",
+      "total_fen": 3350,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:33.598860+00:00",
+        "trace_id": "25b159c8791ee3d7e716faaa447ce733",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 3350,
+        "product_price_fen": 3350,
+        "original_total_fen": 3350,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "9900005456",
+            "product_name": "麦辣鸡腿汉堡三件套",
+            "quantity": 1,
+            "original_subtotal_fen": 3350,
+            "subtotal_fen": 3350
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:33.598860+00:00",
+          "trace_id": "25b159c8791ee3d7e716faaa447ce733",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-2",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:bfad2b57b7451743",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:34.107309+00:00",
+      "source_mode": "live",
+      "total_fen": 4750,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:34.107309+00:00",
+        "trace_id": "35841bcab708f0044f85360aca0dc8d8",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 4750,
+        "product_price_fen": 4750,
+        "original_total_fen": 4750,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "4810",
+            "product_name": "中薯条",
+            "quantity": 1,
+            "original_subtotal_fen": 1400,
+            "subtotal_fen": 1400
+          },
+          {
+            "product_code": "9900005456",
+            "product_name": "麦辣鸡腿汉堡三件套",
+            "quantity": 1,
+            "original_subtotal_fen": 3350,
+            "subtotal_fen": 3350
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:34.107309+00:00",
+          "trace_id": "35841bcab708f0044f85360aca0dc8d8",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-3",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:9ec01cbb0b58fdcf",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:34.631259+00:00",
+      "source_mode": "live",
+      "total_fen": 5600,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:34.631259+00:00",
+        "trace_id": "8ba44040cf575c51da07190ae2dd139a",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 5600,
+        "product_price_fen": 5600,
+        "original_total_fen": 5600,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1440",
+            "product_name": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2250,
+            "subtotal_fen": 2250
+          },
+          {
+            "product_code": "9900005456",
+            "product_name": "麦辣鸡腿汉堡三件套",
+            "quantity": 1,
+            "original_subtotal_fen": 3350,
+            "subtotal_fen": 3350
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:34.631259+00:00",
+          "trace_id": "8ba44040cf575c51da07190ae2dd139a",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-4",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:16634a844359a4ad",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:35.184904+00:00",
+      "source_mode": "live",
+      "total_fen": 7950,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:35.184904+00:00",
+        "trace_id": "38611bdf92be74a8fc466b9930329a24",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 7950,
+        "product_price_fen": 7950,
+        "original_total_fen": 7950,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1440",
+            "product_name": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2250,
+            "subtotal_fen": 2250
+          },
+          {
+            "product_code": "9900016309",
+            "product_name": "龙焰鸡腿堡四件套",
+            "quantity": 1,
+            "original_subtotal_fen": 5700,
+            "subtotal_fen": 5700
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:35.184904+00:00",
+          "trace_id": "38611bdf92be74a8fc466b9930329a24",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-5",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:ebd463f724397464",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:35.779715+00:00",
+      "source_mode": "live",
+      "total_fen": 7950,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:35.779715+00:00",
+        "trace_id": "e08d2c74143cd36d35350cde33b6d151",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 7950,
+        "product_price_fen": 7950,
+        "original_total_fen": 7950,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1440",
+            "product_name": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2250,
+            "subtotal_fen": 2250
+          },
+          {
+            "product_code": "9900016311",
+            "product_name": "龙焰美味四件套",
+            "quantity": 1,
+            "original_subtotal_fen": 5700,
+            "subtotal_fen": 5700
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:35.779715+00:00",
+          "trace_id": "e08d2c74143cd36d35350cde33b6d151",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    },
+    {
+      "request_id": "qr-6",
+      "context_key": "store=1421057;order_type=1;be_type=1",
+      "cart_hash": "cart:sha256:d8c5b71ee75eecce",
+      "session_id": "practice-20261016",
+      "intent_revision": 1,
+      "captured_at": "2026-10-15T16:34:36.314038+00:00",
+      "source_mode": "live",
+      "total_fen": 7950,
+      "known_fee_components": {
+        "deliveryPrice": null,
+        "packingPrice": null,
+        "tablewarePrice": null,
+        "discount": 0
+      },
+      "evidence": {
+        "source": "official",
+        "tool": "calculate-price",
+        "captured_at": "2026-10-15T16:34:36.314038+00:00",
+        "trace_id": "3b10e277f578138600454328e2447f9e",
+        "note": null
+      },
+      "quote": {
+        "total_fen": 7950,
+        "product_price_fen": 7950,
+        "original_total_fen": 7950,
+        "discount_fen": 0,
+        "delivery_fen": null,
+        "packing_fen": null,
+        "tableware_fen": null,
+        "items": [
+          {
+            "product_code": "1440",
+            "product_name": "麦辣鸡腿汉堡",
+            "quantity": 1,
+            "original_subtotal_fen": 2250,
+            "subtotal_fen": 2250
+          },
+          {
+            "product_code": "9900016310",
+            "product_name": "龙焰芝士棒鸡腿堡四件套",
+            "quantity": 1,
+            "original_subtotal_fen": 5700,
+            "subtotal_fen": 5700
+          }
+        ],
+        "evidence": {
+          "source": "official",
+          "tool": "calculate-price",
+          "captured_at": "2026-10-15T16:34:36.314038+00:00",
+          "trace_id": "3b10e277f578138600454328e2447f9e",
+          "note": null
+        },
+        "context_key": "store=1421057;order_type=1;be_type=1"
+      }
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "live 报价仅代表采集时刻的官方核价，下单前请以最终订单确认为准。",
+    "缺失的费用组件为 null（未知），不代表为 0。",
+    "records 已绑定 session_id / intent_revision；需求变更后旧报价不会自动适用于新推荐。"
+  ]
+}
